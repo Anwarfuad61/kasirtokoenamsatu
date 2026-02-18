@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Kasir Toko Enam Satu</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+
+
+<body>
+  <div id="splash">
+  <h1>🎣</h1>
+  <h2>Kasir Toko Enam Satu</h2>
+  <p>Loading...</p>
+</div>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="login-card">
+    <div class="login-logo">🎣</div>
+    <h2>Kasir Toko Enam Satu</h2>
+    <p class="subtitle">Masuk untuk melanjutkan</p>
+
+    <div class="input-group">
+      <input type="password" id="pin" placeholder=" " />
+      <label>PIN Kasir</label>
+    </div>
+
+    <button onclick="login()" class="btn-login">Masuk</button>
+
+    <small class="footer-text">© 2026 Toko Enam Satu</small>
+  </div>
+</div>
+
+
+<div id="app" style="display:none;">
+
+<h1 class="app-title">🎣 Kasir Toko Enam Satu</h1>
+<div id="tab-katalog" class="tab active">
+<div class="box form-card">
+  <h2>Tambah Produk</h2>
+
+  <div class="form-grid">
+    <div class="input-group">
+     
+      <input id="nama" placeholder="nama">
+    </div>
+
+    <div class="input-group">
+    
+      <input id="kategori" placeholder="kategori">
+    </div>
+
+    <div class="input-group">
+      
+      <input id="harga" type="text" placeholder="harga">
+    </div>
+
+    <div class="input-group">
+     
+      <input id="stok" type="number" placeholder="stok">
+    </div>
+  </div>
+
+  <div class="upload-group">
+    <label class="upload-box">
+      <input type="file" id="gambar" accept="image/*" hidden>
+      <span>📷 Upload Gambar</span>
+    </label>
+
+    <img id="preview" class="img-preview">
+  </div>
+
+  <button class="btn-primary" id="btnTambahProduk">
+    ➕ Tambah Produk
+  </button>
+</div>
+
+
+<div id="zoomModal" class="zoom-modal" onclick="tutupZoom(event)">
+  <span class="zoom-close">×</span>
+  <img id="zoomImg" />
+</div>
+
+
+
+<div class="box produk-card">
+  <div class="produk-header">
+    <h2>Daftar Produk</h2>
+
+    <div class="produk-actions">
+  <div class="search-box">
+    <span class="icon">🔍</span>
+    <input
+      id="search"
+      placeholder="Cari produk..."
+      oninput="tampilProduk()"
+    >
+  </div>
+
+  <div class="kategori-box">
+    <select
+      id="filterKategori"
+      onchange="tampilProduk()"
+    >
+      <option value="">Semua Kategori</option>
+    </select>
+  </div>
+</div>
+
+  </div>
+
+   <!-- AREA SCROLL PRODUK -->
+  <div class="produk-scroll">
+    <div id="produkGrid" class="produk-grid"></div>
+  </div>
+
+  <div class="produk-footer">
+    <button class="btn-outline" onclick="toggleKatalog()">🛍️ Mode Katalog</button>
+    <button class="btn-outline" onclick="exportKatalogPDF()">📄 Export PDF</button>
+  </div>
+</div>
+
+<div id="editModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <h3>Edit Produk</h3>
+
+<div class="form-group">
+  <input id="editNama" placeholder=" " />
+  <label>Nama Produk</label>
+</div>
+
+<div class="form-group">
+  <input id="editHarga" type="number" placeholder=" " />
+  <label>Harga</label>
+</div>
+
+<div class="form-group">
+  <input id="editStok" type="number" placeholder=" " />
+  <label>Stok</label>
+</div>
+
+<div class="form-group">
+  <input id="editKategori" placeholder=" " />
+  <label>Kategori</label>
+</div>
+
+<!-- UPLOAD GAMBAR -->
+<label class="upload-edit">
+  <input type="file" id="editGambar" accept="image/*" hidden>
+  <span>📷 Ganti Gambar Produk</span>
+</label>
+
+<img id="editPreview" class="edit-preview">
+
+<div class="edit-footer">
+    <button onclick="simpanEdit()">💾 Simpan</button>
+    <button onclick="tutupEdit()">Batal</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div id="undoBar" class="undo-bar">
+  <span>Produk dihapus</span>
+  <button onclick="undoHapus()">Undo</button>
+</div>
+
+
+<div id="tab-keranjang" class="tab">
+<div class="box transaksi-card">
+  <h2>🛒 Transaksi Penjualan</h2>
+
+  <!-- KERANJANG -->
+  <div id="keranjang" class="keranjang-list"></div>
+
+  <!-- DISKON -->
+ <div class="input-group">
+  <input
+    type="number"
+    id="diskon"
+    value="0"
+    placeholder=" "
+    oninput="tampilKeranjang()"
+  >
+  <label for="diskon">Diskon (Rp)</label>
+</div>
+
+    <div class="input-group">
+            <input type="number" id="diskonPersen" value="0" oninput="tampilKeranjang()">
+      <label for="diskonPersen">Diskon (%)</label>
+    </div>
+  </div>
+
+  <!-- TOTAL -->
+  <div class="total-box">
+    <span>Total Bayar</span>
+    <strong id="totalBayar">Rp 0</strong>
+  </div>
+
+  <!-- BAYAR -->
+ <div class="form-row">
+  <div class="input-group">
+    <input
+      type="number"
+      id="bayar"
+      placeholder=" "
+      oninput="hitungKembalian()"
+    >
+    <label for="bayar">Bayar Tunai</label>
+  </div>
+
+  <div class="input-group">
+    <input
+      type="text"
+      id="kembalian"
+      placeholder=" "
+      readonly
+      value="Rp 0"
+    >
+    <label for="kembalian">Kembalian</label>
+  </div>
+</div>
+<div class="metode-bayar">
+  <button id="btnTunai" class="active" onclick="setMetode('tunai')">💵 Tunai</button>
+  <button id="btnQris" onclick="setMetode('qris')">📱 QRIS</button>
+</div>
+
+</div>
+
+  <!-- ACTION -->
+  <button id="btnBayar" onclick="prosesBayar()" class="btn-pay">
+  💰 Bayar Sekarang
+</button>
+
+<div id="tab-laporan" class="tab">
+
+<div class="box">
+  <button  class="toggle-btn" onclick="togglePanel('pembelianPanel', this)">📦 Pembelian (Stok Masuk)  <span class="arrow">▼</span></button>
+  <div id="pembelianPanel" class="panel">
+  <h2>📦 Pembelian (Stok Masuk)</h2>
+
+  <select id="produkPembelian"></select>
+  <input id="jumlahBeli" type="number" placeholder="Jumlah Masuk">
+  <input id="hargaBeli" type="number" placeholder="Harga Beli (opsional)">
+  <button onclick="beliProduk()">Simpan Pembelian</button>
+  </div>
+</div>
+
+<div class="box">
+  <button  class="toggle-btn" onclick="togglePanel('riwayatPembelianPanel', this)">📑 Riwayat Pembelian  <span class="arrow">▼</span></button>
+  <div id="riwayatPembelianPanel" class="panel">
+  <h2>📑 Riwayat Pembelian</h2>
+   <div class="panel-scroll">
+  <div id="riwayatPembelian"></div>
+  </div>
+  </div>
+</div>
+
+
+<div class="box">
+  <button  class="toggle-btn" onclick="togglePanel('strukPanel', this)">🧾 Struk  <span class="arrow">▼</span></button>
+  <div id="strukPanel" class="panel">
+  <h2>Struk</h2>
+  <div id="struk"class="struk-print struk-58"></div>
+  <button onclick="setUkuranStruk(58)">🧾 58mm</button>
+<button onclick="setUkuranStruk(80)">🧾 80mm</button>
+<button onclick="printStruk()">🖨️ Cetak</button>
+  </div>
+</div>
+
+<h2>📊 Laporan</h2>
+<div class="box">
+<div id="laporanPanel" class="panel laporan-panel">
+
+  <!-- SUMMARY -->
+  <div class="laporan-summary">
+    <div class="summary-card">
+      <small>Total Omzet</small>
+      <strong id="omzet">Rp 0</strong>
+    </div>
+    <div class="summary-card">
+      <small>Transaksi</small>
+      <strong id="totalTransaksi">0</strong>
+    </div>
+  </div>
+
+  <!-- FILTER -->
+  <div class="laporan-filter">
+    <input type="date" id="filterTanggal">
+    <button onclick="filterLaporan()">Tampilkan</button>
+  </div>
+
+  <!-- LIST LAPORAN -->
+   <div class="panel-scroll">
+  <div id="laporan" class="laporan-list"></div>
+  </div>
+
+  <!-- ACTION -->
+  <button class="btn-export" onclick="exportExcel()">📥 Export Excel</button>
+
+</div>
+
+</div>
+
+
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-indicator"></div>
+
+  <button data-tab="katalog" onclick="showTab('katalog', this)">
+    🛍️
+    <span>Katalog</span>
+  </button>
+
+  <button data-tab="keranjang" onclick="showTab('keranjang', this)" class="has-badge">
+    🛒
+    <span>Kart</span>
+    <i id="badgeKeranjang" class="nav-badge">0</i>
+  </button>
+
+  <button data-tab="laporan" onclick="showTab('laporan', this)">
+    📊
+    <span>Laporan</span>
+  </button>
+
+  <button onclick="logout()">
+    🚪
+    <span>Logout</span>
+  </button>
+</div>
+
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>
